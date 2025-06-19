@@ -5,5 +5,5 @@ faiss-cpu==1.7.4
 replicate==0.22.0
 numpy==1.26.4
 gunicorn==21.2.0
-torch==2.2.0
+torch==2.5.1
 transformers==4.37.2
