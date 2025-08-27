@@ -1,5 +1,6 @@
 import React from 'react';
-import { formatTimestamp, extractLinks } from '../utils/formatters';
+import ReactMarkdown from 'react-markdown';
+import { formatTimestamp } from '../utils/formatters';
 import { MessageCircle, User, AlertCircle, Bot } from 'lucide-react';
 
 const ChatMessage = ({ message }) => {
@@ -8,40 +9,38 @@ const ChatMessage = ({ message }) => {
   const renderContent = (text) => {
     if (!text) return null;
 
-    // Extract and format links
-    const links = extractLinks(text);
-    let formattedText = text;
-
-    // Debug logging
-    console.log('Original text:', text);
-    console.log('Extracted links:', links);
-
-    // Replace links with clickable elements - use a single pass approach
-    links.forEach((link, index) => {
-      const linkText = link.includes('virtual tour') ? 'View Virtual Tour' : 'View Link';
-      
-      console.log(`Replacing link ${index}:`, link);
-      
-      // Simple replacement - just replace the exact URL
-      formattedText = formattedText.replace(
-        link,
-        `<a href="${link}" target="_blank" rel="noopener noreferrer" class="text-primary-600 hover:text-primary-700 underline font-medium">${linkText}</a>`
-      );
-      
-      console.log(`After replacement ${index}:`, formattedText);
-    });
-
-    // Split by line breaks and render
-    const lines = formattedText.split('\n');
-    
-    return lines.map((line, index) => (
-      <div key={index} className="mb-2">
-        <span 
-          dangerouslySetInnerHTML={{ __html: line }}
-          className="text-gray-800 leading-relaxed"
-        />
-      </div>
-    ));
+    return (
+      <ReactMarkdown
+        className="text-gray-800 leading-relaxed prose prose-sm max-w-none"
+        components={{
+          // Customize link rendering
+          a: ({ href, children }) => (
+            <a
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary-600 hover:text-primary-700 underline font-medium"
+            >
+              {children}
+            </a>
+          ),
+          // Customize list rendering
+          ul: ({ children }) => (
+            <ul className="list-disc list-inside space-y-1 my-2">
+              {children}
+            </ul>
+          ),
+          // Customize bold text
+          strong: ({ children }) => (
+            <strong className="font-semibold text-gray-900">
+              {children}
+            </strong>
+          )
+        }}
+      >
+        {text}
+      </ReactMarkdown>
+    );
   };
 
   const getMessageIcon = () => {
